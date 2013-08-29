@@ -1,0 +1,171 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{BA558824-67AB-43CF-85B3-379678BC3500}</ProjectGuid>
+        <ProjectVersion>14.4</ProjectVersion>
+        <FrameworkType>None</FrameworkType>
+        <MainSource>LeakDemo.dpr</MainSource>
+        <Base>True</Base>
+        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+        <TargetedPlatforms>1</TargetedPlatforms>
+        <AppType>Console</AppType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='OSX32' and '$(Base)'=='true') or '$(Base_OSX32)'!=''">
+        <Base_OSX32>true</Base_OSX32>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+        <Base_Win32>true</Base_Win32>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
+        <Base_Win64>true</Base_Win64>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
+        <Cfg_1>true</Cfg_1>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_1)'=='true') or '$(Cfg_1_Win32)'!=''">
+        <Cfg_1_Win32>true</Cfg_1_Win32>
+        <CfgParent>Cfg_1</CfgParent>
+        <Cfg_1>true</Cfg_1>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
+        <Cfg_2>true</Cfg_2>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_UnitSearchPath>D:\Sources\Delphi.D8\Komponenten\Fremd\madCollection\madBasic\Sources;D:\Sources\Delphi.D8\Komponenten\Fremd\madCollection\madExcept\Sources;D:\Sources\Delphi.D8\Komponenten\Fremd\madCollection\madDisAsm\Sources;D:\Sources\Delphi.D8\Komponenten\Fremd\madCollection\madKernel\Sources;..\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <VerInfo_Locale>1031</VerInfo_Locale>
+        <Manifest_File>None</Manifest_File>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_ExeOutput>.\..\..\Bin</DCC_ExeOutput>
+        <DCC_E>false</DCC_E>
+        <DCC_N>false</DCC_N>
+        <DCC_S>false</DCC_S>
+        <DCC_F>false</DCC_F>
+        <DCC_K>false</DCC_K>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_OSX32)'!=''">
+        <DCC_UsePackage>IndyIPClient;DBXSqliteDriver;fmx;IndySystem;DBXInterBaseDriver;DataSnapCommon;DbxCommonDriver;dbxcds;CustomIPTransport;dsnap;IndyIPServer;fmxase;IndyCore;IndyIPCommon;inetdbxpress;bindcompfmx;rtl;dbrtl;DbxClientDriver;bindcomp;inetdb;xmlrtl;ibxpress;IndyProtocols;DBXMySQLDriver;bindengine;soaprtl;bindcompdbx;inet;fmxobj;fmxdae;dbexpress;$(DCC_UsePackage)</DCC_UsePackage>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_UsePackage>IndyIPClient;JvGlobus;XPrintSet2;JvMM;JvManagedThreads;VirtualShellToolsD17;tmsexdxe3;ActiveMovie_R;dxCoreRS17;DBXSqliteDriver;dxThemeRS17;cxPageControldxBarPopupMenuRS17;fmx;JvDlgs;IndySystem;JvCrypt;MPCommonLibD17;vclib;inetdbbde;DBXInterBaseDriver;DragDropD17R;DataSnapCommon;JvNet;JvDotNetCtrls;dxRibbonRS17;DbxCommonDriver;cxBarEditItemRS17;vclimg;cxDataRS17;dxSkinsdxBarPainterRS17;dbxcds;MetropolisUILiveTile;JvXPCtrls;vcldb;vcldsnap;dxBarExtItemsRS17;dxGDIPlusRS17;dxNavBarRS17;Used3rdPartyCompCollection_R;dwsLibRuntime;madSecurity_;CustomIPTransport;JvCore;cxLibraryRS17;vclribbon;dsnap;IndyIPServer;fmxase;vcl;IndyCore;IndyIPCommon;CloudService;CodeSiteExpressPkg;dxSkinsdxDLPainterRS17;dEXIF_R;dcldxSkinsCoreRS17;tmswizdxe3;JvAppFrm;JvDB;JvRuntimeDesign;AquaInterfaces_R;inetdbxpress;webdsnap;JclDeveloperTools;AquaRegisterInterfaceFactory_R;JvDocking;adortl;JvWizards;madBasic_;EasyListviewD17;localizer17;AquaStandalonesBaseForOther_R;JvHMI;bindcompfmx;JvBands;vcldbx;rtl;dbrtl;DbxClientDriver;AquaMobileDevices_R;dxTabbedMDIRS17;bindcomp;inetdb;dxComnRS17;JvPluginSystem;PKIECtrl17;dxBarRS17;JclContainers;dxSkinsCoreRS17;GR32_R;dxBarDBNavRS17;GR32Int_R;JvCmp;TMSFMXPackPkgDXE3;madDisAsm_;JvSystem;xmlrtl;svnui;ibxpress;JvTimeFramework;JvControls;dxSkinsdxRibbonPainterRS17;tmsdxe3;IndyProtocols;DBXMySQLDriver;PKIEDB17;dxDockingRS17;dxLayoutControlRS17;AquaPlugin_R;AquaComponents_R;vclactnband;bindengine;soaprtl;bindcompdbx;JvJans;JvPageComps;bindcompvcl;JvStdCtrls;JvCustom;Jcl;vclie;JvPrintPreview;dxBarExtDBItemsRS17;AquaImplementations_R;madExcept_;cxPageControlRS17;vcltouch;dxSkinscxPCPainterRS17;websnap;FoxBurnerSDK;VclSmp;Intraweb;Transparenz_R;GraphicEx_R;dsnapcon;inet;fmxobj;SynEdit_RXE3;JclVcl;JvPascalInterpreter;vclx;DCEF_XE3;cxEditorsRS17;svn;fmxdae;tmsxlsdxe3;bdertl;VirtualTreesR;dbexpress;AqSGraphDisplay_D;JvBDE;$(DCC_UsePackage)</DCC_UsePackage>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win64)'!=''">
+        <DCC_UsePackage>IndyIPClient;dxCoreRS17;DBXSqliteDriver;dxThemeRS17;cxPageControldxBarPopupMenuRS17;fmx;IndySystem;vclib;DBXInterBaseDriver;DataSnapCommon;dxRibbonRS17;DbxCommonDriver;cxBarEditItemRS17;vclimg;cxDataRS17;dxSkinsdxBarPainterRS17;dbxcds;vcldb;vcldsnap;dxBarExtItemsRS17;dxGDIPlusRS17;dxNavBarRS17;CustomIPTransport;cxLibraryRS17;dsnap;IndyIPServer;fmxase;vcl;IndyCore;IndyIPCommon;dxSkinsdxDLPainterRS17;dcldxSkinsCoreRS17;inetdbxpress;webdsnap;adortl;bindcompfmx;rtl;dbrtl;DbxClientDriver;dxTabbedMDIRS17;bindcomp;inetdb;dxComnRS17;PKIECtrl17;dxBarRS17;dxSkinsCoreRS17;dxBarDBNavRS17;xmlrtl;ibxpress;dxSkinsdxRibbonPainterRS17;IndyProtocols;DBXMySQLDriver;PKIEDB17;dxDockingRS17;dxLayoutControlRS17;vclactnband;bindengine;soaprtl;bindcompdbx;bindcompvcl;vclie;dxBarExtDBItemsRS17;cxPageControlRS17;vcltouch;dxSkinscxPCPainterRS17;websnap;VclSmp;dsnapcon;inet;fmxobj;vclx;cxEditorsRS17;fmxdae;dbexpress;$(DCC_UsePackage)</DCC_UsePackage>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1)'!=''">
+        <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+        <DCC_DebugDCUs>true</DCC_DebugDCUs>
+        <DCC_Optimize>false</DCC_Optimize>
+        <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
+        <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+        <DCC_RemoteDebug>true</DCC_RemoteDebug>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <DCC_MapFile>3</DCC_MapFile>
+        <DCC_Define>madExcept;$(DCC_Define)</DCC_Define>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_RemoteDebug>false</DCC_RemoteDebug>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+        <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+        <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+        <DCC_DebugInformation>false</DCC_DebugInformation>
+    </PropertyGroup>
+    <ItemGroup>
+        <DelphiCompile Include="$(MainSource)">
+            <MainSource>MainSource</MainSource>
+        </DelphiCompile>
+        <DCCReference Include="LeakDemo.Leak1.pas"/>
+        <DCCReference Include="LeakDemo.Leak2.pas"/>
+        <BuildConfiguration Include="Release">
+            <Key>Cfg_2</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Base">
+            <Key>Base</Key>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Debug">
+            <Key>Cfg_1</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Delphi.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Delphi.Personality>
+                <Source>
+                    <Source Name="MainSource">LeakDemo.dpr</Source>
+                </Source>
+                <VersionInfo>
+                    <VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+                    <VersionInfo Name="AutoIncBuild">False</VersionInfo>
+                    <VersionInfo Name="MajorVer">1</VersionInfo>
+                    <VersionInfo Name="MinorVer">0</VersionInfo>
+                    <VersionInfo Name="Release">0</VersionInfo>
+                    <VersionInfo Name="Build">0</VersionInfo>
+                    <VersionInfo Name="Debug">False</VersionInfo>
+                    <VersionInfo Name="PreRelease">False</VersionInfo>
+                    <VersionInfo Name="Special">False</VersionInfo>
+                    <VersionInfo Name="Private">False</VersionInfo>
+                    <VersionInfo Name="DLL">False</VersionInfo>
+                    <VersionInfo Name="Locale">1031</VersionInfo>
+                    <VersionInfo Name="CodePage">1252</VersionInfo>
+                </VersionInfo>
+                <VersionInfoKeys>
+                    <VersionInfoKeys Name="CompanyName"/>
+                    <VersionInfoKeys Name="FileDescription"/>
+                    <VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+                    <VersionInfoKeys Name="InternalName"/>
+                    <VersionInfoKeys Name="LegalCopyright"/>
+                    <VersionInfoKeys Name="LegalTrademarks"/>
+                    <VersionInfoKeys Name="OriginalFilename"/>
+                    <VersionInfoKeys Name="ProductName"/>
+                    <VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+                    <VersionInfoKeys Name="Comments"/>
+                    <VersionInfoKeys Name="CFBundleName"/>
+                    <VersionInfoKeys Name="CFBundleDisplayName"/>
+                    <VersionInfoKeys Name="CFBundleIdentifier"/>
+                    <VersionInfoKeys Name="CFBundleVersion"/>
+                    <VersionInfoKeys Name="CFBundlePackageType"/>
+                    <VersionInfoKeys Name="CFBundleSignature"/>
+                    <VersionInfoKeys Name="CFBundleAllowMixedLocalizations"/>
+                    <VersionInfoKeys Name="CFBundleExecutable"/>
+                </VersionInfoKeys>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\RAD Studio\10.0\Bpl\dWinlock_D16.bpl">dWinLock Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k170.bpl">Microsoft Office 2000 Beispiele für gekapselte Komponenten für Automatisierungsserver</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp170.bpl">Microsoft Office XP Beispiele für gekapselte Komponenten für Automation Server</Excluded_Packages>
+                </Excluded_Packages>
+            </Delphi.Personality>
+            <Deployment/>
+            <Platforms>
+                <Platform value="OSX32">False</Platform>
+                <Platform value="Win32">True</Platform>
+                <Platform value="Win64">False</Platform>
+            </Platforms>
+        </BorlandProject>
+        <ProjectFileVersion>12</ProjectFileVersion>
+    </ProjectExtensions>
+    <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+    <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
+</Project>
