@@ -49,7 +49,7 @@ end;
 
 destructor TRefCountTracerLog.Destroy;
 begin
-  FLog.SaveToFile('c:\temp\refcounttrace.txt');
+  FLog.SaveToFile('refcounttrace.txt');
 
   FLog.Free;
 
