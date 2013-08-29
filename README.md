@@ -15,9 +15,9 @@ To the rescue: RefCountTracer can automatically eliminate most places where shor
 
 ![optimized diagram of possible leaks](Doc/example_complex_reduced.png)
 
-To make it clear: RefCountTracer is not able to pinpoint exactly the problematic parts. But by looking at those diagrams one can more easily grasp what the code does and most boilerplate assignments are already eliminated.
+To make it clear: RefCountTracer is not able to pinpoint exactly the problematic part. But by looking at those diagrams one can more easily grasp what the code does and most boilerplate assignments are already eliminated.
 
-Currently Delphi is the only supported language but it should be easy to extend it to other languages. As ARC is now the state of the art memory management technique most people don't know that Delphi had this build into the compiler since 1997 (Delphi 3) with Interfaces but it know gets more popular.
+Currently Delphi is the only supported language but it should be easy to extend it to other languages. As ARC is now the state of the art memory management technique most people don't know that Delphi had this build into the compiler since 1997 (Delphi 3). It came with Interfaces but now it gets more popular.
 
 RefCountTracer consists of several parts:
 
@@ -49,4 +49,4 @@ You can download the pre-built binary. To build it you need Delphi XE3 or XE4 (m
 How to
 ======
 
-Just look into [Demo Project](Src/Demo/) to see how a stack trace log file is created (using [Tracer.Logger.pas](Src\Tracer.Logger.pas)). It's still rough but you should get the point.
+Just look into [Demo Project](Src/Demo/) to see how a stack trace log file is created (using [Tracer.Logger.pas](Src/Tracer.Logger.pas)). It's still rough but you should get the point.
