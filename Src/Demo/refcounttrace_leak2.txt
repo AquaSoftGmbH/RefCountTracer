@@ -1,0 +1,56 @@
+###############
+$00394260: LeakDemo.Leak2.TObj1
+refcountchange: 1
+00542b11 LeakDemo.exe Tracer.Logger              70 TRefCountTracerLog.LogStackTrace
+00542e40 LeakDemo.exe Tracer.InterfacedObject    41 TTracerInterfacedObject._AddRef
+0040cf39 LeakDemo.exe System                  33640 @IntfCopy
+00543181 LeakDemo.exe LeakDemo.Leak2             27 Execute
+00548950 LeakDemo.exe LeakDemo                   18 initialization
+7500850b KERNEL32.DLL                               BaseThreadInitThunk
+###############
+$003942A0: LeakDemo.Leak2.TObj1
+refcountchange: 1
+00542b11 LeakDemo.exe Tracer.Logger              70 TRefCountTracerLog.LogStackTrace
+00542e40 LeakDemo.exe Tracer.InterfacedObject    41 TTracerInterfacedObject._AddRef
+0040cf39 LeakDemo.exe System                  33640 @IntfCopy
+0054319e LeakDemo.exe LeakDemo.Leak2             29 Execute
+00548950 LeakDemo.exe LeakDemo                   18 initialization
+7500850b KERNEL32.DLL                               BaseThreadInitThunk
+###############
+$003942A0: LeakDemo.Leak2.TObj1
+refcountchange: 1
+00542b11 LeakDemo.exe Tracer.Logger              70 TRefCountTracerLog.LogStackTrace
+00542e40 LeakDemo.exe Tracer.InterfacedObject    41 TTracerInterfacedObject._AddRef
+0040cf39 LeakDemo.exe System                  33640 @IntfCopy
+005431b7 LeakDemo.exe LeakDemo.Leak2             30 Execute
+00548950 LeakDemo.exe LeakDemo                   18 initialization
+7500850b KERNEL32.DLL                               BaseThreadInitThunk
+###############
+$00394260: LeakDemo.Leak2.TObj1
+refcountchange: 1
+00542b11 LeakDemo.exe Tracer.Logger              70 TRefCountTracerLog.LogStackTrace
+00542e40 LeakDemo.exe Tracer.InterfacedObject    41 TTracerInterfacedObject._AddRef
+0040cf39 LeakDemo.exe System                  33640 @IntfCopy
+005431d0 LeakDemo.exe LeakDemo.Leak2             31 Execute
+00548950 LeakDemo.exe LeakDemo                   18 initialization
+7500850b KERNEL32.DLL                               BaseThreadInitThunk
+###############
+$003942A0: LeakDemo.Leak2.TObj1
+refcountchange: -1
+00542b11 LeakDemo.exe Tracer.Logger              70 TRefCountTracerLog.LogStackTrace
+00542e70 LeakDemo.exe Tracer.InterfacedObject    53 TTracerInterfacedObject._Release
+0040cf28 LeakDemo.exe System                  33593 @IntfClear
+0040aeac LeakDemo.exe System                  29404 @FinalizeArray
+005431f0 LeakDemo.exe LeakDemo.Leak2             32 Execute
+00548950 LeakDemo.exe LeakDemo                   18 initialization
+7500850b KERNEL32.DLL                               BaseThreadInitThunk
+###############
+$00394260: LeakDemo.Leak2.TObj1
+refcountchange: -1
+00542b11 LeakDemo.exe Tracer.Logger              70 TRefCountTracerLog.LogStackTrace
+00542e70 LeakDemo.exe Tracer.InterfacedObject    53 TTracerInterfacedObject._Release
+0040cf28 LeakDemo.exe System                  33593 @IntfClear
+0040aeac LeakDemo.exe System                  29404 @FinalizeArray
+005431f0 LeakDemo.exe LeakDemo.Leak2             32 Execute
+00548950 LeakDemo.exe LeakDemo                   18 initialization
+7500850b KERNEL32.DLL                               BaseThreadInitThunk
