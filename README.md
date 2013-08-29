@@ -7,13 +7,13 @@ But isn't reference counting a safe memory management technique? Mostly, but you
 
 The base idea of RefCountTracer is to visualize all places in your code where an interface reference is assigned. So you can check all that places for unintended circular references (and fix the problem e.g. turn them into weak references). Easy, isn't it? Just look a this diagram:
 
-![complete diagram of all stack traces](docs/example_complex_complete.png)
+![complete diagram of all stack traces](Doc/example_complex_complete.png)
 
 Easy! Ehhrrmmm, maybe not. This example diagram is in reality about 130000 x 12800 pixel large and contains several hundreds nodes. But nice that RefCountTracer can generate such thing out of a handful of stacktraces.
 
 To the rescue: RefCountTracer can automatically eliminate most places where short living references are assigned. Only places where long living references were assigned are left - among them the leaking ones.
 
-![optimized diagram of possible leaks](docs/example_complex_reduced.png)
+![optimized diagram of possible leaks](Doc/example_complex_reduced.png)
 
 To make it clear: RefCountTracer is not able to pinpoint exactly the problematic parts. But by looking at those diagrams one can more easily grasp what the code does and most boilerplate assignments are already eliminated.
 
