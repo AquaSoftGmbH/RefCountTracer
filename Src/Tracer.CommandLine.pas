@@ -11,6 +11,7 @@ uses
   System.SysUtils,
   Tracer.Tree,
   Tracer.Tools,
+  Tracer.Consts,
   Parameters;
 
 type
@@ -68,7 +69,7 @@ end;
 
 procedure Syntax;
 begin
-  WriteLn('RefCountTracer - Copyright (C) AquaSoft GmbH (R) 2013, www.aquasoft.de');
+  WriteLn('RefCountTracer v', ApplicationVersion, ' initiated by AquaSoft GmbH - www.aquasoft.de');
   WriteLn;
   WriteLn('Syntax: RefCountTracer.exe [-l] <Input-LogFilename> [Output-DotGraphFilename.dot]');
   WriteLn;

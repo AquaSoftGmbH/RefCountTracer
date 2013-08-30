@@ -1,0 +1,3 @@
+[submodule "Bin/Tools/graphviz"]
+	path = Bin/Tools/graphviz
+	url = https://github.com/AquaSoftGmbH/graphviz-bin

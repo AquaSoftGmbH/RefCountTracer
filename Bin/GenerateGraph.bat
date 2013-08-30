@@ -12,7 +12,7 @@ if not errorlevel 0 goto exit
 rem Step 2 - generate a diagram
 
 rem Path to dot.exe (part of Graphviz -> http://www.graphviz.org/)
-set dot=dot.exe
+set dot=%~dp0Tools\graphviz\win32\bin\dot.exe
 
 rem Output format. Other valid formats are png, pdf, svg, and all listed here: http://www.graphviz.org/content/output-formats
 set format=png
