@@ -51,6 +51,9 @@ end;
 
 function TOptions.ParseParameters: Boolean;
 begin
+  if not Params then
+    Exit(False);
+
   Result := True;
 
   Options := [oRemoveNonLeaked];
@@ -71,9 +74,7 @@ procedure Syntax;
 begin
   WriteLn('RefCountTracer v', ApplicationVersion, ' initiated by AquaSoft GmbH - www.aquasoft.de');
   WriteLn;
-  WriteLn('Syntax: RefCountTracer.exe [-l] <Input-LogFilename> [Output-DotGraphFilename.dot]');
-  WriteLn;
-  WriteLn('');
+  WriteLn('Syntax: RefCountTracer.exe [-l] <Input-LogFilename> [Output-GraphFilename.dot]');
   WriteLn;
   WriteLn('-l DON''T remove not leaking branches from the graph');
   WriteLn;
