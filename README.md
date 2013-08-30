@@ -11,7 +11,7 @@ The base idea of RefCountTracer is to visualize all places in your code where an
 
 Easy! Ehhrrmmm, maybe not. This example diagram is in reality about 130000 x 12800 pixel large and contains several hundreds nodes. But nice that RefCountTracer can generate such thing out of a handful of stacktraces.
 
-To the rescue: RefCountTracer can automatically eliminate most places where short living references are assigned. Only places where long living references were assigned are left - among them the leaking ones.
+To the rescue: RefCountTracer can automatically eliminate most places where short living references are assigned. Only places where long living references were assigned are left - among them the leaking ones. This diagram now looks a lot more informative.
 
 ![optimized diagram of possible leaks](Doc/example_complex_reduced.png)
 

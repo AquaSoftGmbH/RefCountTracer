@@ -9,8 +9,6 @@ program RefCountTracer;
 {$R *.res}
 
 uses
-  System.SysUtils,
-  System.Classes,
   Tracer.Tree in 'Src\Tracer.Tree.pas',
   Tracer.InternString in 'Src\Tracer.InternString.pas',
   Tracer.Consts in 'Src\Tracer.Consts.pas',
@@ -20,6 +18,7 @@ uses
   Tracer.CommandLine in 'Src\Tracer.CommandLine.pas';
 
 begin
+  {$IFDEF TESTING}
   // To run the unittests:
   // - compile with define TESTING
   // - start the executeable with "-u"-Parameter, e.g. RefCountTracer.exe -u
@@ -28,6 +27,7 @@ begin
 
   if RunTests <> rtrSkipped then
     Exit; // Exit application after unit tests run
+  {$ENDIF}
 
   ExecuteCommandLineInterface;
 end.

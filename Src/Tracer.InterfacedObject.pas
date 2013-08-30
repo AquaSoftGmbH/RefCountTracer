@@ -28,11 +28,10 @@ implementation
 
 uses
 {$IFDEF DEBUG}
-//  DebugTools,
-  Windows,
+  Winapi.Windows,
   Tracer.Logger,
 {$ENDIF}
-  SysUtils;
+  System.SysUtils;
 
 { TTracerInterfacedObject }
 
@@ -40,11 +39,7 @@ function TTracerInterfacedObject._AddRef: Integer;
 begin
   Result := AtomicIncrement(FRefCount);
   {$IFDEF DEBUG}
-//  if Self.ClassNameIs('TSelectionGroup') and (FInstanceID = 9999) then
-  begin
-    RefCountTracerLog.LogStackTrace(Self, 1);
-//    OutputDebugString(PChar(Format('%s(%p)._AddRef -> RefCount = %d', [Self.ClassName, Pointer(Self), FRefCount])));
-  end;
+  RefCountTracerLog.LogStackTrace(Self, 1);
   {$ENDIF}
 end;
 
@@ -52,11 +47,7 @@ function TTracerInterfacedObject._Release: Integer;
 begin
   Result := AtomicDecrement(FRefCount);
   {$IFDEF DEBUG}
-//  if Self.ClassNameIs('TSelectionGroup') and (FInstanceID = 9999)  then
-  begin
-    RefCountTracerLog.LogStackTrace(Self, -1);
-//    OutputDebugString(PChar(Format('%s(%p)._Release -> RefCount = %d', [Self.ClassName, Pointer(Self), FRefCount])));
-  end;
+  RefCountTracerLog.LogStackTrace(Self, -1);
   {$ENDIF}
   if Result = 0 then
     Destroy;
