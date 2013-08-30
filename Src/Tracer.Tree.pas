@@ -120,7 +120,7 @@ type
     ///	  Reference should remain in the tree.
     ///	</summary>
     procedure RemoveNonLeaked;
-
+    procedure Sort;
     property Root: TTracerTreeNode read FRoot;
   end;
 
@@ -243,8 +243,6 @@ begin
       Result := Result + '\n' + Format('Refs %d', [ChildrenRefCount]);
       if FRefCountChange <> 0 then
         Result := Result + Format(', Chg %d', [FRefCountChange]);
-{      if Content[tcLine] <> '' then
-        Result := Result + '\n' + Format('L: %s', [Content[tcLine]]);}
     end;
     ntFunction: begin
       Result := Content[tcLine];
@@ -312,7 +310,6 @@ begin
   OwnsObjects := True;
 
   Node.Level := TargetNode.Level + 1;
-//  TargetNode.AddHit(Node.Hits);
   Node.Owner := TargetNode;
   TargetNode.Add(Node);
 end;
@@ -464,35 +461,33 @@ begin
     begin
       CurrentChildNode := List[i];
       NewNode := nil;
-      for ii := List.Count - 1 downto i + 1 do
+      if not IsLeaf(CurrentChildNode) then
       begin
-        OtherNode := List[ii];
-        if IsSameTraceAtLevel(CurrentChildNode, OtherNode, CurrentChildNode.Level) then
+        for ii := List.Count - 1 downto i + 1 do
         begin
-          if IsLeaf(OtherNode) then
-          begin // Merge the two nodes
-            CurrentChildNode.AddHit(OtherNode.Hits); // don't forget to count it
-            CurrentChildNode.RefCountChange := CurrentChildNode.RefCountChange + OtherNode.RefCountChange;
-            List.Delete(ii); // remove doubled entry
-          end else
-          begin // we found a node with a common ancestor.
-            if NewNode = nil then
-            begin
-              // Now create an intermediate node to grow the tree
-              NewNode := CreateIntermediateNode(CurrentChildNode);
-            end;
+          OtherNode := List[ii];
+          if IsSameTraceAtLevel(CurrentChildNode, OtherNode, CurrentChildNode.Level) then
+          begin
+            if not IsLeaf(OtherNode) then
+            begin // we found a node with a common ancestor.
+              if NewNode = nil then
+              begin
+                // Now create an intermediate node to grow the tree
+                NewNode := CreateIntermediateNode(CurrentChildNode);
+              end;
 
-            // Move "OtherNode" to intermediate node as a child
-            List.MoveTo(ii, NewNode);
-            NewNode.AddHit(OtherNode.Hits);
+              // Move "OtherNode" to intermediate node as a child
+              List.MoveTo(ii, NewNode);
+              NewNode.AddHit(OtherNode.Hits);
+            end;
           end;
         end;
-      end;
-      if NewNode <> nil then
-      begin
-        // Insert intermediate node into the tree
-        List.Insert(i, NewNode);
-        List.MoveTo(i + 1, NewNode); // Move CurrentChildNode to the intermediate node
+        if NewNode <> nil then
+        begin
+          // Insert intermediate node into the tree
+          List.Insert(i, NewNode);
+          List.MoveTo(i + 1, NewNode); // Move CurrentChildNode to the intermediate node
+        end;
       end;
 
       Inc(i);
@@ -562,14 +557,6 @@ var
   var
     i: Integer;
   begin
-(*    Result := Base;
-    if Result <> '' then
-      Result := Result + ' -> ';
-    Result := Result + Node.GraphKey;
-    Result := Result + Format('[penwidth=%d]', [{Max(1, Node.ParentRefCount + Node.RefCountChange)}Round(Max(1, Min(20, Node.Hits * 0.25)))]);
-    if (Node.Owner <> nil) and (Node.Owner.NodeType = ntFunction) then
-      Result := Result + Format('[weight=4]', []);*)
-
     if Node.IsLeaf then
     begin // no child nodes
       SourceCode.AppendLine(#9 + Result);
@@ -584,16 +571,6 @@ var
     begin
       NodeGraph('', Node[i]); // recursion
     end;
-{    if Node.IsLeaf then
-    begin // no child nodes
-      SourceCode.AppendLine(#9 + Result);
-    end else
-    for i := 0 to Node.Count - 1 do
-    begin
-      SourceCode.AppendLine(#9 + Result);
-      NodeGraph(NodeName, Node[i]); // recursion
-//      NodeGraph(Result, Node[i]); // recursion
-    end;}
   end;
 
   procedure AddNodeCaptions;
@@ -724,6 +701,32 @@ begin
 end;
 
 procedure TTracerTree.MergeDouble;
+  procedure RemoveOrphans(const Orphan, Parent: TTracerTreeNode);
+  begin
+    // Removes orphaned line number nodes
+	
+    // Check if it is an orphan. This is the case if:
+    // 1. Parent is NodeType = ntFunction
+    // 2. Node is the one and only child of Parent
+
+    // Check 1.
+    if Parent.NodeType <> ntFunction then
+      Exit;
+
+    // Check 2.1.
+    if not Orphan.IsLeaf then
+      Exit;
+
+    // Check 2.2.
+    if (Parent.Count <> 1) then
+      Exit;
+
+    // Convert Parent into a normal Node
+    Parent.NodeType := ntNormal;
+    Parent.RefCountChange := Parent.RefCountChange + Orphan.RefCountChange;
+    Parent.Remove(Orphan);
+  end;
+
   procedure Iterate(const List: TTracerTreeNode);
   var
     i: Integer;
@@ -734,7 +737,10 @@ procedure TTracerTree.MergeDouble;
     begin
       Node := List[i];
       if IsSameTrace(Node, List[i + 1]) then
-        MergeNodes(Node, List[i + 1]) else
+      begin
+        MergeNodes(Node, List[i + 1]);
+        RemoveOrphans(Node, List);
+      end else
         Inc(i);
     end;
 
@@ -742,7 +748,7 @@ procedure TTracerTree.MergeDouble;
       Iterate(List[i]); // recursion
   end;
 begin
-  Root.Sort;
+  Sort;
   Iterate(Root);
 end;
 
@@ -816,7 +822,7 @@ procedure TTracerTree.MergeFunctions;
   end;
 
 begin
-  FRoot.Sort;
+  Sort;
 
   Iterate(FRoot);
 end;
@@ -997,6 +1003,11 @@ procedure TTracerTree.RemoveNonLeaked;
   end;
 begin
   DoIterate(Root);
+end;
+
+procedure TTracerTree.Sort;
+begin
+  FRoot.Sort;
 end;
 
 initialization

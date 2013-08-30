@@ -28,6 +28,7 @@ function RunText: Boolean;
 begin
   with TextTestRunner.RunRegisteredTests do
     Free;
+  ReadLn; // let us see the results
   Result := True; // Todo: reflect test result
 end;
 {$ELSE}

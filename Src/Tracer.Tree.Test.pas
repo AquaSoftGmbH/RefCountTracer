@@ -50,18 +50,48 @@ end;
 procedure TTracerTreeTest.TestParseBuildTree1;
 begin
   Tree.ParseLog(LoadStringFromFile(Fixture('logs\log1.txt')));
+
+  // Build a huge tree with a node for each line in every stack trace
   Tree.BuildTree;
+  CheckEquals(''
+  + #13#10'root'
+  + #13#10'  ?'
+  + #13#10'    initialization'
+  + #13#10'      Execute'
+  + #13#10'        @IntfCopy'
+  + #13#10'          TTracerInterfacedObject._AddRef'
+  + #13#10'      Execute'
+  + #13#10'        @IntfClear'
+  + #13#10'          TTracerInterfacedObject._Release'
+  + #13#10, #13#10 + ToString(Tree));
+
+  // Comibine all Nodes with share the same function but have different line numbers and insert nodes for line numbers
   Tree.MergeFunctions;
+  Tree.Sort;
+  CheckEquals(''
+  + #13#10'root'
+  + #13#10'  ?'
+  + #13#10'    initialization'
+  + #13#10'      Execute'
+  + #13#10'        24'
+  + #13#10'          @IntfCopy'
+  + #13#10'            TTracerInterfacedObject._AddRef'
+  + #13#10'        25'
+  + #13#10'          @IntfClear'
+  + #13#10'            TTracerInterfacedObject._Release'
+  + #13#10, #13#10 + ToString(Tree));
+
+  // Combine all doubled nodes
   Tree.MergeDouble;
   CheckEquals(''
   + #13#10'root'
   + #13#10'  ?'
   + #13#10'    initialization'
   + #13#10'      Execute'
-  + #13#10'        Execute'
+  + #13#10'        24'
   + #13#10'          @IntfCopy'
   + #13#10'            TTracerInterfacedObject._AddRef'
-  + #13#10'        Execute'
+  + #13#10'        25'
   + #13#10'          @IntfClear'
   + #13#10'            TTracerInterfacedObject._Release'
   + #13#10, #13#10 + ToString(Tree));
@@ -71,26 +101,76 @@ procedure TTracerTreeTest.TestParseBuildTree2;
 begin
   Tree.ParseLog(LoadStringFromFile(Fixture('logs\log2.txt')));
   Tree.BuildTree;
+  Tree.Sort;
+  CheckEquals(''
+  + #13#10'root'
+  + #13#10'  ?'
+  + #13#10'    initialization'
+  + #13#10'      Execute'
+  + #13#10'        @IntfCopy'
+  + #13#10'          TTracerInterfacedObject._AddRef'
+  + #13#10'      Execute'
+  + #13#10'        @IntfCopy'
+  + #13#10'          TTracerInterfacedObject._AddRef'
+  + #13#10'      Execute'
+  + #13#10'        @IntfCopy'
+  + #13#10'          TTracerInterfacedObject._AddRef'
+  + #13#10'      Execute'
+  + #13#10'        @IntfCopy'
+  + #13#10'          TTracerInterfacedObject._AddRef'
+  + #13#10'      Execute'
+  + #13#10'        @FinalizeArray'
+  + #13#10'          @IntfClear'
+  + #13#10'            TTracerInterfacedObject._Release'
+  + #13#10'            TTracerInterfacedObject._Release'
+  + #13#10, #13#10 + ToString(Tree));
+
   Tree.MergeFunctions;
+  Tree.Sort;
+  CheckEquals(''
+  + #13#10'root'
+  + #13#10'  ?'
+  + #13#10'    initialization'
+  + #13#10'      Execute'
+  + #13#10'        27'
+  + #13#10'          @IntfCopy'
+  + #13#10'            TTracerInterfacedObject._AddRef'
+  + #13#10'        29'
+  + #13#10'          @IntfCopy'
+  + #13#10'            TTracerInterfacedObject._AddRef'
+  + #13#10'        30'
+  + #13#10'          @IntfCopy'
+  + #13#10'            TTracerInterfacedObject._AddRef'
+  + #13#10'        31'
+  + #13#10'          @IntfCopy'
+  + #13#10'            TTracerInterfacedObject._AddRef'
+  + #13#10'        32'
+  + #13#10'          @FinalizeArray'
+  + #13#10'            @IntfClear'
+  + #13#10'              TTracerInterfacedObject._Release'
+  + #13#10'                53'
+  + #13#10'                53'
+  + #13#10, #13#10 + ToString(Tree));
+
   Tree.MergeDouble;
   CheckEquals(''
   + #13#10'root'
   + #13#10'  ?'
   + #13#10'    initialization'
   + #13#10'      Execute'
-  + #13#10'        Execute'
+  + #13#10'        27'
   + #13#10'          @IntfCopy'
   + #13#10'            TTracerInterfacedObject._AddRef'
-  + #13#10'        Execute'
+  + #13#10'        29'
   + #13#10'          @IntfCopy'
   + #13#10'            TTracerInterfacedObject._AddRef'
-  + #13#10'        Execute'
+  + #13#10'        30'
   + #13#10'          @IntfCopy'
   + #13#10'            TTracerInterfacedObject._AddRef'
-  + #13#10'        Execute'
+  + #13#10'        31'
   + #13#10'          @IntfCopy'
   + #13#10'            TTracerInterfacedObject._AddRef'
-  + #13#10'        Execute'
+  + #13#10'        32'
   + #13#10'          @FinalizeArray'
   + #13#10'            @IntfClear'
   + #13#10'              TTracerInterfacedObject._Release'
@@ -112,7 +192,9 @@ end;
 function TTracerTreeTest.ToString(const Tree: TTracerTree): string;
   function Caption(const Node: TTracerTreeNode; const Level: Integer): string;
   begin
-    Result := Node.Content[tcFunction];
+    if (Node.Owner <> nil) and (Node.Owner.NodeType = ntFunction) then
+      Result := Node.Content[tcLine] else
+      Result := Node.Content[tcFunction];
 
     if Result = '' then
       if Level = 0 then
