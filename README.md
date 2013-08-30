@@ -1,9 +1,9 @@
 RefCountTracer
 ==============
 
-A Utility to help track down memoryleaks caused by Reference Counting. 
+A Utility to help track down memory leaks caused by [reference counting](http://en.wikipedia.org/wiki/Reference_counting). 
 
-But isn't reference counting a safe memory management technique? Mostly, but you are able to build circular references. E.g. Object1 references Object2 and Object2 references Object1. In this case the reference count is at least one and can never go to zero and free the objects. To make things worse the place where the circular reference is created can be far away from the place the object is created. 
+But isn't reference counting a safe memory management technique? Mostly, but you are able to build circular references. E.g. Object1 references Object2 and Object2 references Object1. In this case the reference count is at least one and can never go to zero and free the objects. To make things worse the place where the circle is created can be far away from the place the object is created. 
 
 The base idea of RefCountTracer is to visualize all places in your code where an interface reference is assigned. So you can check all that places for unintended circular references (and fix the problem e.g. turn them into weak references). Easy, isn't it? Just look a this diagram:
 
@@ -23,13 +23,17 @@ RefCountTracer consists of several parts:
 
 1. Stack Trace-Logger (to be included in your source code)
 2. Log-Processor (command line exe)
-3. Graphviz (to generate fancy diagrams, not included, download here: http://graphviz.org/)
+3. [Graphviz](http://graphviz.org/) (to generate fancy diagrams, included as a git submodule)
 
 Requirements
 ============
 
+To visualize your code like this you need 3 things.
+
 1. Stack trace logger
 ---------------------
+This thing has to be included in your source code and logs every assignments of interface references. It depends on the used language how it should/can be integrated.
+
 1. Delphi
 
   This utility isn't able to create the stack trace itself. It just logs it into a file. To create the stack trace currently MadExcept is needed. Other tools like JCLDebug or Eurekalog could be added later. As the logger is very simple it could work with older Delphi versions (but that's untested).
@@ -40,13 +44,20 @@ Requirements
 
 2. Log-Processor
 ----------------
-You can download the pre-built binary. To build it you need Delphi XE3 or XE4 (may also work with earlier versions).
+
+This is the heart of this project: RefCountTracer.exe. It analyzes the stack trace log, generates and optimizes a tree of all code places.
+
+To build it you need Delphi XE3 or XE4 (may also work with earlier versions down to Delphi 2010).
 
 3. Graphviz
 -----------
-[Graphviz](http://graphviz.org/) has to be downloaded and installed on your system.
+Graphviz is an open source project itself and generates graphs in different formats out of a text based description language. RefCountTracer.exe generates such a diagram description to be fed into dot.exe (a part of Graphviz).
+
+[Graphviz](http://graphviz.org/) is included as a sub module for convenience, but you can use whichever version you like.
 
 How to
 ======
 
-Just look into [Demo Project](Src/Demo/) to see how a stack trace log file is created (using [Tracer.Logger.pas](Src/Tracer.Logger.pas)). It's still rough but you should get the point.
+Just look into [Demo Project](Src/Demo/) to see how a stack trace log file is created (using [Tracer.Logger.pas](Src/Tracer.Logger.pas)). It's still rough but you should get the point. 
+
+If you just want to see how the diagrams are generated, use [GenerateExampleOutput.bat](Src/Demo/GenerateExampleOutput.bat).
