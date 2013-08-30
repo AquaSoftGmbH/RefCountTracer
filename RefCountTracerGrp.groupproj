@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{7F7E326E-9D66-4CF2-A047-0B63B5046953}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="RefCountTracer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Src\Demo\LeakDemo.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="RefCountTracer">
+        <MSBuild Projects="RefCountTracer.dproj"/>
+    </Target>
+    <Target Name="RefCountTracer:Clean">
+        <MSBuild Projects="RefCountTracer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="RefCountTracer:Make">
+        <MSBuild Projects="RefCountTracer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="LeakDemo">
+        <MSBuild Projects="Src\Demo\LeakDemo.dproj"/>
+    </Target>
+    <Target Name="LeakDemo:Clean">
+        <MSBuild Projects="Src\Demo\LeakDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LeakDemo:Make">
+        <MSBuild Projects="Src\Demo\LeakDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="RefCountTracer;LeakDemo"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="RefCountTracer:Clean;LeakDemo:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="RefCountTracer:Make;LeakDemo:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
