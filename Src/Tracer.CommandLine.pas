@@ -58,6 +58,8 @@ begin
   CheckParam(Result, (LogFilename <> '') and CheckFileExists(LogFilename), 'no log file');
 
   GraphFilename := GetFileName(2);
+  if GraphFilename = '' then
+    GraphFilename := ChangeFileExt(LogFilename, '.dot');
   CheckParam(Result, (GraphFilename <> ''), 'no output file');
 
   if Param('l') then
@@ -68,7 +70,7 @@ procedure Syntax;
 begin
   WriteLn('RefCountTracer - Copyright (C) AquaSoft GmbH (R) 2013, www.aquasoft.de');
   WriteLn;
-  WriteLn('Syntax: RefCountTracer.exe [-l] <Input-LogFilename> <Output-DotGraphFilename.dot>');
+  WriteLn('Syntax: RefCountTracer.exe [-l] <Input-LogFilename> [Output-DotGraphFilename.dot]');
   WriteLn;
   WriteLn('');
   WriteLn;
