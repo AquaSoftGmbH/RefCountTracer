@@ -9,7 +9,7 @@ interface
 const
   TraceLogDelimiter = '###############';
   ApplicationVersionMajor = '1';
-  ApplicationVersionMinor = '00';
+  ApplicationVersionMinor = '1';
   ApplicationVersion = ApplicationVersionMajor + '.' + ApplicationVersionMinor;
 
 implementation
