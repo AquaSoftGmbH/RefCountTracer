@@ -318,17 +318,24 @@ function TTracerTreeNode.TraceContent(const Line: Integer): TTraceContent;
 var
   Entry: string;
 
-  function FromLeft(var s: string; const Delimiter: Char = ' '): string;
+  function FromLeft(var s: string; const Delimiter: Char = #9): string;
   var
     Index: Integer;
   begin
     Index := Pos(Delimiter, s);
-    Result := Copy(s, 1, Index);
-    System.Delete(s, 1, Index);
+    if Index = 0 then
+    begin
+      Result := s;
+      s := '';
+    end else
+    begin
+      Result := Copy(s, 1, Index);
+      System.Delete(s, 1, Index);
+    end;
     Result := Trim(Result);
   end;
 
-  function FromRight(var s: string; const Delimiter: Char = ' '): string;
+  function FromRight(var s: string; const Delimiter: Char = #9): string;
   var
     Index: Integer;
   begin
@@ -357,15 +364,15 @@ begin
 
   Entry := FStackTrace[Line];
 
-  // Sample lines:
-  // 005f267a DiaShow.exe  Vcl.Controls                                 7456 TControl.WMMouseMove
-  // 74ec8a61 user32.dll                                                     DispatchMessageW
+  // Sample lines (Tab is the delimiter):
+  // 005f267a -> DiaShow.exe -> Vcl.Controls -> 7456 -> TControl.WMMouseMove
+  // 74ec8a61 -> user32.dll ->  ->  -> DispatchMessageW
 
   Result[tcAddress] := FromLeft(Entry);
   Result[tcModule] := FromLeft(Entry);
-  Result[tcFunction] := FromRight(Entry);
-  Result[tcLine] := FromRight(Entry); // can be empty
-  Result[tcUnit] := Trim(Entry); // can be empty
+  Result[tcUnit] := FromLeft(Entry); // can be empty
+  Result[tcLine] := FromLeft(Entry); // can be empty
+  Result[tcFunction] := FromLeft(Entry);
   Result[tcClass] := GetClassName(Result[tcFunction]);
 end;
 
@@ -984,7 +991,6 @@ begin
   // Parse all lines from the stacktrace
   while NextLine(Offset, Line) do
     Result.StackTrace.Add(Line);
-  Result.StackTrace.Delete(0);
 
   ReverseOrder(Result.StackTrace);
 end;
