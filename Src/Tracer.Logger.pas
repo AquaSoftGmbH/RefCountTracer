@@ -41,6 +41,7 @@ type
     ///	  returns line by line with every call.
     ///	</summary>
     function NextLine(const Token: string; var Offset: Integer; out Line: string): Boolean;
+    function PointerToHex(const Ptr: Pointer): string;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -113,16 +114,10 @@ begin
 end;
 
 procedure TRefCountTracerLog.LogStackTrace(const Instance: TObject; const RefCountChange: Integer);
-const
-  {$IFDEF CPUX64}
-  MaxHexLength = 16;
-  {$ELSE}
-  MaxHexLength = 8;
-  {$ENDIF}
 begin
   FLog.Add(TraceLogDelimiter);
   // Key
-  FLog.Add('$' + IntToHex(NativeInt(Instance), MaxHexLength) + ': ' + Instance.UnitName + '.' + Instance.ClassName);
+  FLog.Add('$' + PointerToHex(Instance) + ': ' + Instance.UnitName + '.' + Instance.ClassName);
   // RefCount-Change
   FLog.Add('refcountchange: ' + IntToStr(RefCountChange));
   // Log
@@ -153,6 +148,17 @@ begin
     Inc(Offset, Length(Line));
     Result := True;
   end;
+end;
+
+function TRefCountTracerLog.PointerToHex(const Ptr: Pointer): string;
+const
+  {$IFDEF CPUX64}
+  MaxHexLength = 16;
+  {$ELSE}
+  MaxHexLength = 8;
+  {$ENDIF}
+begin
+  Result := IntToHex(NativeInt(Ptr), MaxHexLength);
 end;
 
 initialization
