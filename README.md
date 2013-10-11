@@ -1,7 +1,7 @@
 RefCountTracer
 ==============
 
-A Utility to help track down memory leaks caused by [reference counting](http://en.wikipedia.org/wiki/Reference_counting). 
+A Utility to help track down memory leaks caused by [reference counting](http://en.wikipedia.org/wiki/Reference_counting). Developed by Steffen Binas (steffen.binas at aquasoft.de).
 
 But isn't reference counting a safe memory management technique? Mostly, but you are able to build circular references. E.g. Object1 references Object2 and Object2 references Object1. In this case the reference count is at least one and can never go to zero and free the objects. To make things worse the place where the circle is created can be far away from the place the object is created. 
 
@@ -36,7 +36,7 @@ This thing has to be included in your source code and logs every assignments of 
 
 1. Delphi
 
-  This utility isn't able to create the stack trace itself. It just logs it into a file. To create the stack trace currently MadExcept is needed. Other tools like JCLDebug or Eurekalog could be added later. As the logger is very simple it could work with older Delphi versions (but that's untested).
+  This utility isn't able to create the stack trace itself. It just logs it into a file. To create the stack trace currently MadExcept or EurekaLog is needed. Other tools like JCLDebug could be added later. As the logger is very simple it could work with older Delphi versions (but that's untested).
 
 2. Other Languages
 
@@ -61,3 +61,8 @@ How to
 Just look into [Demo Project](Src/Demo/) to see how a stack trace log file is created (using [Tracer.Logger.pas](Src/Tracer.Logger.pas)). It's still rough but you should get the point. 
 
 If you just want to see how the diagrams are generated, use [GenerateExampleOutput.bat](Src/Demo/GenerateExampleOutput.bat).
+
+Help appreciated
+================
+
+Pull requests are welcome! 
