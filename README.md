@@ -47,7 +47,7 @@ This thing has to be included in your source code and logs every assignments of 
 
 This is the heart of this project: RefCountTracer.exe. It analyzes the stack trace log, generates and optimizes a tree of all code places.
 
-To build it you need Delphi XE3 or XE4 (may also work with earlier versions down to Delphi 2010).
+To build it you need Delphi XE3, XE4 or XE5 (may also work with earlier versions down to Delphi 2010).
 
 3. Graphviz
 -----------
