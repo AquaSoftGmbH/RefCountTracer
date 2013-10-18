@@ -65,4 +65,12 @@ If you just want to see how the diagrams are generated, use [GenerateExampleOutp
 Help appreciated
 ================
 
+Ideas for further development:
+
+* easier Logging via runtime patching of _AddRef and _Release of arbitrary interface references
+* helper utils to find the concrete instance of a leaked interface
+* Logging for Objects references?
+* a logger for JCLDebug
+* parse FastMM's Memoryleak reports, so the root of a leak can easier be spotted
+
 Pull requests are welcome! 
