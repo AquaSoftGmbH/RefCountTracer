@@ -71,7 +71,8 @@ uses
   Tracer.Logger.JCLDebug, // Todo
   {$ENDIF}
   System.SysUtils,
-  Tracer.Consts, Tracer.Logger.Tools;
+  Tracer.Consts, 
+  Tracer.Logger.Tools;
 
 var
   _RefCountTracerLog: TRefCountTracerLog = nil;
@@ -126,13 +127,13 @@ begin
   try
     FLog.Add(TraceLogDelimiter);
     // Key
-  //  FLog.Add('$' + PointerToHex(Instance) + ': ' + Instance.UnitName + '.' + Instance.ClassName);
-    FLog.Add('$' + PointerToHex(Instance));
+    FLog.Add('$' + PointerToHex(Instance) + ': ' + Instance.UnitName + '.' + Instance.ClassName);
+    // FLog.Add('$' + PointerToHex(Instance));
     // RefCount-Change
     FLog.Add('refcountchange: ' + IntToStr(RefCountChange));
     // Log
-{    if not SkipStackTrace then
-      DoLogStackTrace;}
+    if not SkipStackTrace then
+      DoLogStackTrace;
   finally
     FLock.Leave;
   end;
