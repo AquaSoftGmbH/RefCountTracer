@@ -79,7 +79,15 @@ type
 
   TTracerTree = class
   protected
+    type
+      TInstances = class(TDictionary<string, Integer>)
+      protected
+        procedure AddHit(const Key: string; const Change: Integer);
+        function GetRefCount(const Key: string): Integer;
+      end;
+  protected
     FRoot: TTracerTreeNode;
+    FLivingInstances: TInstances;
     function GetNextToken(var Offset: Integer; const Log: string; out Token: string): Boolean;
     function ParseToken(const Token: string): TTracerTreeNode;
     procedure BuildTree(const List: TTracerTreeNode); overload;
@@ -120,6 +128,13 @@ type
     ///	  Reference should remain in the tree.
     ///	</summary>
     procedure RemoveNonLeaked;
+
+    ///	<summary>
+    ///	  Removes all nodes which belong to instances with a final RefCount of
+    ///	  0. This should be done before <c>BuildTree</c>.
+    ///	</summary>
+    procedure RemoveNonLeakedInstances;
+
     procedure Sort;
     property Root: TTracerTreeNode read FRoot;
   end;
@@ -516,11 +531,13 @@ begin
 
   FRoot := TTracerTreeNode.Create;
   FRoot.Level := -1;
+  FLivingInstances := TInstances.Create;
 end;
 
 destructor TTracerTree.Destroy;
 begin
   FreeAndNil(FRoot);
+  FreeAndNil(FLivingInstances);
 
   inherited;
 end;
@@ -979,7 +996,7 @@ begin
 
   if not NextLine(Offset, Line) then
     Exit;
-  // Secod line contains RefCountChange
+  // Second line contains RefCountChange
   System.Delete(Line, 1, Length('refcountchange: '));
   if not TryStrToInt(Line, Value) then
   begin
@@ -987,6 +1004,7 @@ begin
     Exit;
   end;
   Result.RefCountChange := Value;
+  FLivingInstances.AddHit(Result.ReferenceKey, Result.RefCountChange);
 
   // Parse all lines from the stacktrace
   while NextLine(Offset, Line) do
@@ -1011,9 +1029,51 @@ begin
   DoIterate(Root);
 end;
 
+procedure TTracerTree.RemoveNonLeakedInstances;
+  procedure DoIterate(const Node: TTracerTreeNode);
+  var
+    i: Integer;
+  begin
+    for i := Node.Count - 1 downto 0 do
+    begin
+      // Does the node belongs to an reference which is alive (= leaking)?
+      if FLivingInstances.GetRefCount(Node[i].FReferenceKey) <= 0 then
+        Node.Delete(i) else
+        DoIterate(Node[i]); // recursion
+    end;
+  end;
+begin
+  DoIterate(Root);
+end;
+
 procedure TTracerTree.Sort;
 begin
   FRoot.Sort;
+end;
+
+{ TTracerTree.TInstances }
+
+procedure TTracerTree.TInstances.AddHit(const Key: string;
+  const Change: Integer);
+var
+  CurrentCount: Integer;
+begin
+  if not TryGetValue(Key, CurrentCount) then
+    CurrentCount := 0;
+
+  Inc(CurrentCount, Change);
+  if CurrentCount = 0 then
+  begin
+    if Change <> 0 then
+      Remove(Key);
+  end else
+    AddOrSetValue(Key, CurrentCount);
+end;
+
+function TTracerTree.TInstances.GetRefCount(const Key: string): Integer;
+begin
+  if not TryGetValue(Key, Result) then
+    Result := -1;
 end;
 
 initialization

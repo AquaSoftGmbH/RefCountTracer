@@ -16,7 +16,8 @@ implementation
 
 uses
   SysUtils,
-  MadStackTrace;
+  MadStackTrace,
+  Tracer.Logger.Tools;
 
 { TMadExceptRefCountTracerLog }
 

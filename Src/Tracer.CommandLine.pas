@@ -97,6 +97,9 @@ begin
     if not Tracer.ParseLog(LoadLogAsString(Options.LogFilename)) then
       Error('Error parsing Log');
 
+    if oRemoveNonLeaked in Options.Options then
+      Tracer.RemoveNonLeakedInstances;
+
     Tracer.BuildTree;
     Tracer.MergeFunctions;
 

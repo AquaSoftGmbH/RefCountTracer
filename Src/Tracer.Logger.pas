@@ -9,7 +9,8 @@ interface
 {$INCLUDE Tracer.Logger.inc}
 
 uses
-  System.Classes;
+  System.Classes,
+  System.SyncObjs;
 
 type
   TStackTraceEntry = record
@@ -23,6 +24,7 @@ type
   TRefCountTracerLog = class
   protected
     FLog: TStringList;
+    FLock: TCriticalSection;
 
     ///	<summary>
     ///	  Adds a new line in the log for the stack trace.
@@ -35,18 +37,21 @@ type
     ///	  for every line of the call stack.
     ///	</summary>
     procedure DoLogStackTrace; virtual; abstract;
-
-    ///	<summary>
-    ///	  A helper function for parsing a string containing several lines. It
-    ///	  returns line by line with every call.
-    ///	</summary>
-    function NextLine(const Token: string; var Offset: Integer; out Line: string): Boolean;
-    function PointerToHex(const Ptr: Pointer): string;
   public
     constructor Create; virtual;
     destructor Destroy; override;
 
-    procedure LogStackTrace(const Instance: TObject; const RefCountChange: Integer);
+    ///	<summary>
+    ///	  Logs the RefCount Change of an Instance.
+    ///	</summary>
+    ///	<param name="RefCountChange">
+    ///	  Set 1 for _AddRef and -1 for _Release
+    ///	</param>
+    ///	<param name="SkipStackTrace">
+    ///	  If True no stacktrace is written. This can be useful for hand
+    ///	  optimizations.
+    ///	</param>
+    procedure LogStackTrace(const Instance: TObject; const RefCountChange: Integer; const SkipStackTrace: Boolean = False);
   end;
   TRefCountTracerLogClass = class of TRefCountTracerLog;
 
@@ -66,7 +71,7 @@ uses
   Tracer.Logger.JCLDebug, // Todo
   {$ENDIF}
   System.SysUtils,
-  Tracer.Consts;
+  Tracer.Consts, Tracer.Logger.Tools;
 
 var
   _RefCountTracerLog: TRefCountTracerLog = nil;
@@ -102,6 +107,7 @@ end;
 constructor TRefCountTracerLog.Create;
 begin
   FLog := TStringList.Create;
+  FLock := TCriticalSection.Create;
 end;
 
 destructor TRefCountTracerLog.Destroy;
@@ -109,56 +115,27 @@ begin
   FLog.SaveToFile('refcounttrace.txt');
 
   FLog.Free;
+  FLock.Free;
 
   inherited;
 end;
 
-procedure TRefCountTracerLog.LogStackTrace(const Instance: TObject; const RefCountChange: Integer);
+procedure TRefCountTracerLog.LogStackTrace(const Instance: TObject; const RefCountChange: Integer; const SkipStackTrace: Boolean);
 begin
-  FLog.Add(TraceLogDelimiter);
-  // Key
-  FLog.Add('$' + PointerToHex(Instance) + ': ' + Instance.UnitName + '.' + Instance.ClassName);
-  // RefCount-Change
-  FLog.Add('refcountchange: ' + IntToStr(RefCountChange));
-  // Log
-  DoLogStackTrace;
-end;
-
-function TRefCountTracerLog.NextLine(const Token: string; var Offset: Integer;
-  out Line: string): Boolean;
-var
-  Index: Integer;
-begin
-  Index := Pos(#13#10, Token, Offset + 1);
-  if Index = 0 then
-  begin
-    if Offset + 1 < Length(Token) then
-      Index := Length(Token) + 1 else
-      Exit(False); // nothing found
+  FLock.Enter;
+  try
+    FLog.Add(TraceLogDelimiter);
+    // Key
+  //  FLog.Add('$' + PointerToHex(Instance) + ': ' + Instance.UnitName + '.' + Instance.ClassName);
+    FLog.Add('$' + PointerToHex(Instance));
+    // RefCount-Change
+    FLog.Add('refcountchange: ' + IntToStr(RefCountChange));
+    // Log
+{    if not SkipStackTrace then
+      DoLogStackTrace;}
+  finally
+    FLock.Leave;
   end;
-
-  Line := Copy(Token, Offset + 1, Index - (Offset + 1));
-  Inc(Offset, 2); // Skip Delimiter
-
-  if Line = '' then
-  begin // Skip empty lines
-    Result := NextLine(Token, Offset, Line);
-  end else
-  begin
-    Inc(Offset, Length(Line));
-    Result := True;
-  end;
-end;
-
-function TRefCountTracerLog.PointerToHex(const Ptr: Pointer): string;
-const
-  {$IFDEF CPUX64}
-  MaxHexLength = 16;
-  {$ELSE}
-  MaxHexLength = 8;
-  {$ENDIF}
-begin
-  Result := IntToHex(NativeInt(Ptr), MaxHexLength);
 end;
 
 initialization
