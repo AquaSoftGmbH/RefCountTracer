@@ -44,6 +44,17 @@ end;
 
 procedure TEurekaLogRefCountTracerLog.LogLine(
   const CallStack: TEurekaBaseStackList; const Index: Integer);
+
+  function GetAddressOf(var AVariable): string;
+  begin
+    Result := IntToHex( Integer( Pointer( @AVariable ) ), 8 );
+  end;
+
+  function PointerToHex(var AVariable): string;
+  begin
+    Result:= IntToHex( StrToInt('$' + GetAddressOf( AVariable ) ) , 4)
+  end;
+
 var
   Entry: TStackTraceEntry;
   Info_: TEurekaDebugInfo;

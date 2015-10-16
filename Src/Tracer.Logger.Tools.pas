@@ -17,15 +17,14 @@ function NativeIntToHex(const Value: NativeInt): string;
 implementation
 
 uses
-  System.SysUtils;
-
+  SysUtils, StrUtils;
 
 function NextLine(const Token: string; var Offset: Integer;
   out Line: string): Boolean;
 var
   Index: Integer;
 begin
-  Index := Pos(#13#10, Token, Offset + 1);
+  Index := PosEx(#13#10, Token, Offset + 1);
   if Index = 0 then
   begin
     if Offset + 1 < Length(Token) then

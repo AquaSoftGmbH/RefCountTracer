@@ -9,8 +9,8 @@ interface
 {$INCLUDE Tracer.Logger.inc}
 
 uses
-  System.Classes,
-  System.SyncObjs;
+  Classes,
+  SyncObjs;
 
 type
   TStackTraceEntry = record
@@ -70,7 +70,7 @@ uses
   {$IFDEF LOGGER_JCLDEBUG}
   Tracer.Logger.JCLDebug, // Todo
   {$ENDIF}
-  System.SysUtils,
+  SysUtils,
   Tracer.Consts, 
   Tracer.Logger.Tools;
 

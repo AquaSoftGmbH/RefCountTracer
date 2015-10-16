@@ -7,8 +7,8 @@ unit Tracer.Tools;
 interface
 
 uses
-  System.SysUtils,
-  System.Classes;
+  SysUtils,
+  Classes;
 
 type
   ///	<summary>

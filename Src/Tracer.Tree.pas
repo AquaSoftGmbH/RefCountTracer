@@ -7,9 +7,10 @@ unit Tracer.Tree;
 interface
 
 uses
-  System.Classes,
-  System.SysUtils,
-  System.Generics.Collections;
+  Classes,
+  SysUtils,
+  Generics.Collections,
+  SyncObjs;
 
 type
   TTraceContentType = (tcAddress, tcModule, tcUnit, tcLine, tcFunction, tcClass);
@@ -19,6 +20,7 @@ type
 
   TTracerTreeNode = class(TObjectList<TTracerTreeNode>)
   protected
+    class var FCriticalSection : TCriticalSection;
     class var FUniqueCounter: Integer;
   protected
     FStackTrace: TStringList;
@@ -37,6 +39,8 @@ type
     procedure SetLevel(const Value: Integer);
     function SortKey: string;
   public
+    class constructor Create;
+    class destructor Destroy;
     constructor Create;
     destructor Destroy; override;
     procedure MoveTo(const Index: Integer; const TargetNode: TTracerTreeNode);
@@ -149,8 +153,8 @@ uses
   Tracer.InternString,
   Tracer.Tools,
   Tracer.Tree.Tools,
-  System.Math,
-  System.Generics.Defaults, System.StrUtils;
+  Math,
+  Generics.Defaults, StrUtils;
 
 { TTracerTreeNode }
 
@@ -185,14 +189,30 @@ begin
   Result := @FContent;
 end;
 
+class constructor TTracerTreeNode.Create;
+begin
+  FCriticalSection := TCriticalSection.Create;
+end;
+
 constructor TTracerTreeNode.Create;
 begin
   inherited Create(True);
   FStackTrace := TStringList.Create;
   FRefCountChange := 0;
   FHits := 1;
-  FUniqueID := AtomicIncrement(FUniqueCounter); // generate an unique ID for each Node
+  FCriticalSection.Enter;
+  try
+    FUniqueCounter := FUniqueCounter + 1;
+    FUniqueID := FUniqueCounter; // generate an unique ID for each Node
+  finally
+    FCriticalSection.Leave;
+  end;
   FNodeType := ntNormal;
+end;
+
+class destructor TTracerTreeNode.Destroy;
+begin
+  FCriticalSection.Free;
 end;
 
 destructor TTracerTreeNode.Destroy;
@@ -235,8 +255,19 @@ begin
 end;
 
 function TTracerTreeNode.SortKey: string;
+
+  function LeftPad(S: string; Ch: Char; Len: Integer): string;
+  var
+    RestLen: Integer;
+  begin
+    Result  := S;
+    RestLen := Len - Length(s);
+    if RestLen < 1 then Exit;
+    Result := S + StringOfChar(Ch, RestLen);
+  end;
+
 begin
-  Result := Content[tcUnit] + Content[tcClass] + Content[tcFunction] + Content[tcLine].PadLeft(6, '0');
+  Result := Content[tcUnit] + Content[tcClass] + Content[tcFunction] + LeftPad(Content[tcLine], '0', 6);
 end;
 
 function TTracerTreeNode.GetCaption: string;
@@ -706,7 +737,7 @@ function TTracerTree.GetNextToken(var Offset: Integer; const Log: string; out To
 var
   Index: Integer;
 begin
-  Index := Pos(TraceLogDelimiter, Log, Offset + 1);
+  Index := PosEx(TraceLogDelimiter, Log, Offset + 1);
   if Index = 0 then
   begin
     if Offset < Length(Log) then
@@ -956,7 +987,7 @@ function TTracerTree.ParseToken(const Token: string): TTracerTreeNode;
   var
     Index: Integer;
   begin
-    Index := Pos(#13#10, Token, Offset + 1);
+    Index := PosEx(#13#10, Token, Offset + 1);
     if Index = 0 then
     begin
       if Offset + 1 < Length(Token) then

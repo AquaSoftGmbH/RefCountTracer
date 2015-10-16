@@ -6,10 +6,14 @@ unit Tracer.InterfacedObject;
  
 interface
 
+uses
+  SyncObjs;
+
 type
   TTracerInterfacedObject = class(TObject, IInterface)
   protected
-    FRefCount: Integer;
+    class var FCriticalSection : TCriticalSection;
+    var FRefCount: Integer;
 {$IFDEF DEBUG}
     FInstanceID: Integer;
     class var InstanceCount: Integer;
@@ -18,6 +22,8 @@ type
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
   public
+    class constructor Create;
+    class destructor Destroy;
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
     property RefCount: Integer read FRefCount;
@@ -28,16 +34,22 @@ implementation
 
 uses
 {$IFDEF DEBUG}
-  Winapi.Windows,
+  Windows,
   Tracer.Logger,
 {$ENDIF}
-  System.SysUtils;
+  SysUtils;
 
 { TTracerInterfacedObject }
 
 function TTracerInterfacedObject._AddRef: Integer;
 begin
-  Result := AtomicIncrement(FRefCount);
+  FCriticalSection.Enter;
+  try
+    FRefCount := FRefCount + 1;
+    Result := FRefCount;
+  finally
+    FCriticalSection.Leave;
+  end;
   {$IFDEF DEBUG}
   RefCountTracerLog.LogStackTrace(Self, 1);
   {$ENDIF}
@@ -45,7 +57,13 @@ end;
 
 function TTracerInterfacedObject._Release: Integer;
 begin
-  Result := AtomicDecrement(FRefCount);
+  FCriticalSection.Enter;
+  try
+    FRefCount := FRefCount - 1;
+    Result := FRefCount;
+  finally
+    FCriticalSection.Leave;
+  end;
   {$IFDEF DEBUG}
   RefCountTracerLog.LogStackTrace(Self, -1);
   {$ENDIF}
@@ -61,10 +79,25 @@ begin
     Result := E_NOINTERFACE;
 end;
 
+class constructor TTracerInterfacedObject.Create;
+begin
+  FCriticalSection := TCriticalSection.Create;
+end;
+
+class destructor TTracerInterfacedObject.Destroy;
+begin
+  FCriticalSection.Free;
+end;
+
 procedure TTracerInterfacedObject.AfterConstruction;
 begin
   // Release the constructor's implicit refcount
-  AtomicDecrement(FRefCount);
+  FCriticalSection.Enter;
+  try
+    FRefCount := FRefCount - 1;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 procedure TTracerInterfacedObject.BeforeDestruction;
