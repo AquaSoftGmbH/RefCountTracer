@@ -7,13 +7,12 @@ unit Tracer.InterfacedObject;
 interface
 
 uses
-  SyncObjs;
+  Windows;
 
 type
   TTracerInterfacedObject = class(TObject, IInterface)
   protected
-    class var FCriticalSection : TCriticalSection;
-    var FRefCount: Integer;
+    FRefCount: Integer;
 {$IFDEF DEBUG}
     FInstanceID: Integer;
     class var InstanceCount: Integer;
@@ -22,8 +21,6 @@ type
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
   public
-    class constructor Create;
-    class destructor Destroy;
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
     property RefCount: Integer read FRefCount;
@@ -34,7 +31,6 @@ implementation
 
 uses
 {$IFDEF DEBUG}
-  Windows,
   Tracer.Logger,
 {$ENDIF}
   SysUtils;
@@ -43,13 +39,7 @@ uses
 
 function TTracerInterfacedObject._AddRef: Integer;
 begin
-  FCriticalSection.Enter;
-  try
-    FRefCount := FRefCount + 1;
-    Result := FRefCount;
-  finally
-    FCriticalSection.Leave;
-  end;
+  Result := InterlockedIncrement(FRefCount);
   {$IFDEF DEBUG}
   RefCountTracerLog.LogStackTrace(Self, 1);
   {$ENDIF}
@@ -57,13 +47,7 @@ end;
 
 function TTracerInterfacedObject._Release: Integer;
 begin
-  FCriticalSection.Enter;
-  try
-    FRefCount := FRefCount - 1;
-    Result := FRefCount;
-  finally
-    FCriticalSection.Leave;
-  end;
+  InterlockedDecrement(FRefCount);
   {$IFDEF DEBUG}
   RefCountTracerLog.LogStackTrace(Self, -1);
   {$ENDIF}
@@ -79,25 +63,10 @@ begin
     Result := E_NOINTERFACE;
 end;
 
-class constructor TTracerInterfacedObject.Create;
-begin
-  FCriticalSection := TCriticalSection.Create;
-end;
-
-class destructor TTracerInterfacedObject.Destroy;
-begin
-  FCriticalSection.Free;
-end;
-
 procedure TTracerInterfacedObject.AfterConstruction;
 begin
   // Release the constructor's implicit refcount
-  FCriticalSection.Enter;
-  try
-    FRefCount := FRefCount - 1;
-  finally
-    FCriticalSection.Leave;
-  end;
+  InterlockedDecrement(FRefCount);
 end;
 
 procedure TTracerInterfacedObject.BeforeDestruction;

@@ -7,10 +7,10 @@ unit Tracer.Tree;
 interface
 
 uses
+  Windows,
   Classes,
   SysUtils,
-  Generics.Collections,
-  SyncObjs;
+  Generics.Collections;
 
 type
   TTraceContentType = (tcAddress, tcModule, tcUnit, tcLine, tcFunction, tcClass);
@@ -20,7 +20,6 @@ type
 
   TTracerTreeNode = class(TObjectList<TTracerTreeNode>)
   protected
-    class var FCriticalSection : TCriticalSection;
     class var FUniqueCounter: Integer;
   protected
     FStackTrace: TStringList;
@@ -39,8 +38,6 @@ type
     procedure SetLevel(const Value: Integer);
     function SortKey: string;
   public
-    class constructor Create;
-    class destructor Destroy;
     constructor Create;
     destructor Destroy; override;
     procedure MoveTo(const Index: Integer; const TargetNode: TTracerTreeNode);
@@ -154,7 +151,8 @@ uses
   Tracer.Tools,
   Tracer.Tree.Tools,
   Math,
-  Generics.Defaults, StrUtils;
+  Generics.Defaults,
+  StrUtils;
 
 { TTracerTreeNode }
 
@@ -189,30 +187,14 @@ begin
   Result := @FContent;
 end;
 
-class constructor TTracerTreeNode.Create;
-begin
-  FCriticalSection := TCriticalSection.Create;
-end;
-
 constructor TTracerTreeNode.Create;
 begin
   inherited Create(True);
   FStackTrace := TStringList.Create;
   FRefCountChange := 0;
   FHits := 1;
-  FCriticalSection.Enter;
-  try
-    FUniqueCounter := FUniqueCounter + 1;
-    FUniqueID := FUniqueCounter; // generate an unique ID for each Node
-  finally
-    FCriticalSection.Leave;
-  end;
+  FUniqueID := InterlockedIncrement(FUniqueCounter); // generate an unique ID for each Node
   FNodeType := ntNormal;
-end;
-
-class destructor TTracerTreeNode.Destroy;
-begin
-  FCriticalSection.Free;
 end;
 
 destructor TTracerTreeNode.Destroy;
