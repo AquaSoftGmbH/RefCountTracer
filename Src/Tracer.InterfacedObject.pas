@@ -6,6 +6,9 @@ unit Tracer.InterfacedObject;
  
 interface
 
+uses
+  Windows;
+
 type
   TTracerInterfacedObject = class(TObject, IInterface)
   protected
@@ -28,16 +31,15 @@ implementation
 
 uses
 {$IFDEF DEBUG}
-  Winapi.Windows,
   Tracer.Logger,
 {$ENDIF}
-  System.SysUtils;
+  SysUtils;
 
 { TTracerInterfacedObject }
 
 function TTracerInterfacedObject._AddRef: Integer;
 begin
-  Result := AtomicIncrement(FRefCount);
+  Result := InterlockedIncrement(FRefCount);
   {$IFDEF DEBUG}
   RefCountTracerLog.LogStackTrace(Self, 1);
   {$ENDIF}
@@ -45,7 +47,7 @@ end;
 
 function TTracerInterfacedObject._Release: Integer;
 begin
-  Result := AtomicDecrement(FRefCount);
+  InterlockedDecrement(FRefCount);
   {$IFDEF DEBUG}
   RefCountTracerLog.LogStackTrace(Self, -1);
   {$ENDIF}
@@ -64,7 +66,7 @@ end;
 procedure TTracerInterfacedObject.AfterConstruction;
 begin
   // Release the constructor's implicit refcount
-  AtomicDecrement(FRefCount);
+  InterlockedDecrement(FRefCount);
 end;
 
 procedure TTracerInterfacedObject.BeforeDestruction;

@@ -22,6 +22,7 @@ implementation
 
 uses
   SysUtils,
+  Tracer.Logger.Tools,
   EClasses;
 
 { TEurekaLogRefCountTracerLog }

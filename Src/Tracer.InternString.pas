@@ -11,7 +11,7 @@ function InternString(const Value: string): string;
 implementation
 
 uses
-  System.Generics.Collections;
+  Generics.Collections;
 
 var
   Strings: TDictionary<string, string>;

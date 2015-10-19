@@ -11,8 +11,8 @@ procedure ExecuteCommandLineInterface;
 implementation
 
 uses
-  System.Classes,
-  System.SysUtils,
+  Classes,
+  SysUtils,
   Tracer.Tree,
   Tracer.Tools,
   Tracer.Consts,
