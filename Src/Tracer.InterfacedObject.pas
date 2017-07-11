@@ -6,6 +6,10 @@ unit Tracer.InterfacedObject;
  
 interface
 
+{$IFDEF DEBUG}
+  {$DEFINE ENABLE_LOGGING}
+{$ENDIF}
+
 uses
   Windows;
 
@@ -13,7 +17,7 @@ type
   TTracerInterfacedObject = class(TObject, IInterface)
   protected
     FRefCount: Integer;
-{$IFDEF DEBUG}
+{$IFDEF ENABLE_LOGGING}
     FInstanceID: Integer;
     class var InstanceCount: Integer;
 {$ENDIF}
@@ -30,7 +34,7 @@ type
 implementation
 
 uses
-{$IFDEF DEBUG}
+{$IFDEF ENABLE_LOGGING}
   Tracer.Logger,
 {$ENDIF}
   SysUtils;
@@ -40,15 +44,15 @@ uses
 function TTracerInterfacedObject._AddRef: Integer;
 begin
   Result := InterlockedIncrement(FRefCount);
-  {$IFDEF DEBUG}
+  {$IFDEF ENABLE_LOGGING}
   RefCountTracerLog.LogStackTrace(Self, 1);
   {$ENDIF}
 end;
 
 function TTracerInterfacedObject._Release: Integer;
 begin
-  InterlockedDecrement(FRefCount);
-  {$IFDEF DEBUG}
+  Result := InterlockedDecrement(FRefCount);
+  {$IFDEF ENABLE_LOGGING}
   RefCountTracerLog.LogStackTrace(Self, -1);
   {$ENDIF}
   if Result = 0 then
