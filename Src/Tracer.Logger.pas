@@ -52,6 +52,7 @@ type
     ///	  optimizations.
     ///	</param>
     procedure LogStackTrace(const Instance: TObject; const RefCountChange: Integer; const SkipStackTrace: Boolean = False);
+    procedure Write;
   end;
   TRefCountTracerLogClass = class of TRefCountTracerLog;
 
@@ -113,7 +114,7 @@ end;
 
 destructor TRefCountTracerLog.Destroy;
 begin
-  FLog.SaveToFile('refcounttrace.txt');
+  Write;
 
   FLog.Free;
   FLock.Free;
@@ -137,6 +138,11 @@ begin
   finally
     FLock.Leave;
   end;
+end;
+
+procedure TRefCountTracerLog.Write;
+begin
+  FLog.SaveToFile('refcounttrace.txt');
 end;
 
 initialization
